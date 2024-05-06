@@ -1,0 +1,20 @@
+name: MyWorkflow
+
+on: [workflow_dispatch]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        path: repo
+    - uses: azure/login@v1
+      with:
+        client-id: 20eecfa7-60ae-44b2-978f-7cd4ce39e076
+        tenant-id: 1e355c04-e0a4-42ed-8e2d-7351591f0ef1
+        subscription-id: 06d9968f-6b01-4bf8-b0c1-85b8b5fcec0b

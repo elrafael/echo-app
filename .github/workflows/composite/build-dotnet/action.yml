@@ -1,0 +1,30 @@
+name: "Build and Test dotnet"
+description: "Builds dotnet code project and runs unit tests"
+
+inputs:
+  dotnetProject:
+    description: "dotnet project"
+    required: true
+  buildConfiguration:
+    description: "Build configuration"
+    default: "Debug"
+    required: false
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Restore projects
+      shell: bash
+      run: |
+        dotnet restore ${{ inputs.dotnetProject }}
+
+      
+    - name: Build projects
+      shell: bash
+      run: |
+        dotnet build --no-restore ${{ inputs.dotnetProject }} -c ${{ inputs.buildConfiguration }}

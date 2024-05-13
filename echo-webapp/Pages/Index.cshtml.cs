@@ -29,6 +29,7 @@ public class IndexModel : PageModel
 
     public void OnPost()
     {
+        //
         _logger.LogInformation("Sending message to echo service");
         var apiUrl = _configuration["EchoAPIServer"];
         var url = String.Format("{0}/echo/{1}" , apiUrl, Message);

@@ -1,0 +1,48 @@
+---
+- name: Prepare VM for GitHub Runner
+  hosts: runner
+  become: true
+
+  tasks:
+    - name: Install required packages
+      ansible.builtin.apt:
+        name: ["git", "curl", "jq", "dotnet-sdk-8.0"]
+        state: present
+      become: true
+
+    - name: Create GitHub Runner user
+      ansible.builtin.user:
+        name: github-runner
+        state: present
+        shell: /bin/bash
+        createhome: yes
+      become: true
+
+    - name: Download GitHub Runner
+      ansible.builtin.get_url:
+        url: https://github.com/actions/runner/releases/latest/download/actions-runner-linux-x64-2.283.2.tar.gz
+        dest: /home/github-runner/actions-runner-linux-x64.tar.gz
+        mode: 0644
+      become: true
+
+    - name: Extract GitHub Runner
+      ansible.builtin.unarchive:
+        src: /home/github-runner/actions-runner-linux-x64.tar.gz
+        dest: /home/github-runner
+        remote_src: yes
+      become: true
+
+    - name: Configure GitHub Runner
+      ansible.builtin.command: |
+        /home/github-runner/config.sh --url https://github.com/theonorg/echo-app --token ${{ GITHUB_TOKEN }}
+      become: true
+
+    - name: Install GitHub Runner as a service
+      ansible.builtin.systemd:
+        name: actions.runner.your_vm_host
+        state: started
+        enabled: yes
+        daemon_reload: yes
+        user: github-runner
+        exec_start: /home/github-runner/run.sh
+      become: true

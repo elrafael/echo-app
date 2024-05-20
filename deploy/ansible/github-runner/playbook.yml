@@ -34,7 +34,7 @@
 
     - name: Configure GitHub Runner
       ansible.builtin.command: |
-        /home/github-runner/config.sh --url https://github.com/theonorg/echo-app --token ${{ GITHUB_TOKEN }}
+        /home/github-runner/config.sh --url https://github.com/elrafael/echo-app --token ${{ GITHUB_TOKEN }}
       become: true
 
     - name: Install GitHub Runner as a service

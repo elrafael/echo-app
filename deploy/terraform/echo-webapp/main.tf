@@ -40,3 +40,34 @@ resource "azurerm_linux_web_app" "webapp" {
     }
   }
 }
+
+resource "azurerm_app_configuration" "appconfig" {
+  name                = "${var.appName}-${var.appServiceName}-${var.env}-config"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "standard"
+}
+
+resource "azurerm_app_configuration_feature" "getlogsff" {
+  configuration_store_id = azurerm_app_configuration.appconfig.id
+  description            = "GetLogs button"
+  name                   = "GetLogs"
+  enabled                = true
+}
+resource "azurerm_linux_web_app" "webapp" {
+  name                = "${var.appName}-${var.appServiceName}-${var.env}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  service_plan_id     = azurerm_service_plan.appserviceplan.id
+
+  app_settings = {
+    "AppConfigConnString" = azurerm_app_configuration.appconfig.primary_read_key[0].connection_string
+  }
+
+  site_config {
+    always_on = true
+    application_stack {
+      dotnet_version = "6.0"
+    }
+  }
+}

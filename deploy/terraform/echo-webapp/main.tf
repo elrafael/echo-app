@@ -33,6 +33,9 @@ resource "azurerm_linux_web_app" "webapp" {
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.appserviceplan.id
 
+  app_settings = {
+    "AppConfigConnString" = azurerm_app_configuration.appconfig.primary_read_key[0].connection_string
+  }
   site_config {
     always_on = true
     application_stack {
@@ -53,21 +56,4 @@ resource "azurerm_app_configuration_feature" "getlogsff" {
   description            = "GetLogs button"
   name                   = "GetLogs"
   enabled                = true
-}
-resource "azurerm_linux_web_app" "webapp" {
-  name                = "${var.appName}-${var.appServiceName}-${var.env}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  service_plan_id     = azurerm_service_plan.appserviceplan.id
-
-  app_settings = {
-    "AppConfigConnString" = azurerm_app_configuration.appconfig.primary_read_key[0].connection_string
-  }
-
-  site_config {
-    always_on = true
-    application_stack {
-      dotnet_version = "6.0"
-    }
-  }
 }
